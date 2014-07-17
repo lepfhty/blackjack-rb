@@ -1,29 +1,22 @@
 require 'card'
+require 'logger'
 
 class Deck
-
-  def initialize(num = 1, reshuffle_pct = 0.2)
+  def initialize(num = 1)
     @num_decks = num
-    @reshuffle_pct = reshuffle_pct
     reshuffle!
   end
 
   def deal!
-    card = @cards.pop
-    reshuffle! if size <= 52 * @num_decks * @reshuffle_pct
-    card
+    raise 'All cards dealt!' if @cards.empty?
+    @cards.pop
   end
 
   def size
-    @cards.size
+    @cards.size / 52.0 / @num_decks
   end
 
   def reshuffle!(seed = nil)
-    if @cards
-      puts "#{size} cards left."
-    end
-    puts "Reshuffling ..."
-
     @cards = []
     @num_decks.times do
       Card::VALUES.each do |v|

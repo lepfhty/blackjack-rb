@@ -10,10 +10,19 @@ class TestDeck < Minitest::Test
   end
 
   def test_deck
-    assert_equal @deck.size, 52
-    assert_equal @deck6.size, 52 * 6
-    53.times do
-      puts @deck.deal!
-    end
+    assert_equal 1.0, @deck.size
+    assert_equal 1.0, @deck6.size
+  end
+
+  def test_reshuffle
+    a = @deck.deal!
+    b = @deck.deal!
+    assert @deck.size < 1
+    @deck.reshuffle!
+    assert_equal 1.0, @deck.size
+    c = @deck.deal!
+    d = @deck.deal!
+    assert @deck.size < 1
+    assert "#{a} #{b}" != "#{c} #{d}"
   end
 end
