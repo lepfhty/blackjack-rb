@@ -1,12 +1,14 @@
 class Hand
-  attr_reader :bet, :cards, :total
+  attr_accessor :bet
+  attr_reader :cards, :total
 
-  def initialize(card1, card2, bet = 1)
+  def initialize(card1, card2)
     @cards = []
     @ace = false
-    @bet = bet
+    @bet = 1
     @done = false
     @soft = false
+    @total = 0
     hit!(card1)
     hit!(card2)
   end
@@ -16,6 +18,7 @@ class Hand
   end
 
   def hit!(card)
+    raise "Cannot hit this hand: #{to_s}" unless hittable?
     @cards << card
     @ace ||= (card.value == :A)
     @total = @cards.reduce(0) do |s, card|
@@ -27,21 +30,28 @@ class Hand
   end
 
   def double!(card)
+    raise "Cannot double this hand: #{to_s}" unless doubleable?
+    hit!(card)
     @bet *= 2
     @done = true
-    hit!(card)
+    self
   end
 
   def split!(card1, card2)
-    h1 = Hand.new(@cards[0], card1, @bet)
-    h2 = Hand.new(@cards[1], card2, @bet)
+    raise "Cannot split this hand: #{to_s}" unless splittable?
+    h1 = Hand.new(@cards[0], card1)
+    h2 = Hand.new(@cards[1], card2)
     @done = true
     [h1, h2]
   end
 
+  def stand!
+    @done = true
+  end
+
   def payout(dealer_hand)
     if bust? or (!dealer_hand.bust? && dealer_hand.total > @total)
-      -@bet
+      0
     elsif blackjack? && !dealer_hand.blackjack?
       2.5 * @bet
     elsif dealer_hand.bust? or dealer_hand.total < @total

@@ -25,15 +25,15 @@ class TestHand < Minitest::Test
   end
 
   def test_hands_total
-    assert_equal @h5.total, 5
-    assert_equal @hsoft14.total, 14
-    assert_equal @hsoft20.total, 20
-    assert_equal @hbj.total, 21
-    assert_equal @hsoft16hit.total, 16
-    assert_equal @hhard12hit.total, 12
-    assert_equal @hdouble9.total, 9
-    assert_equal @hbust.total, 24
-    assert_equal @hpair.total, 16
+    assert_equal 5, @h5.total
+    assert_equal 14, @hsoft14.total
+    assert_equal 20, @hsoft20.total
+    assert_equal 21, @hbj.total
+    assert_equal 16, @hsoft16hit.total
+    assert_equal 12, @hhard12hit.total
+    assert_equal 9, @hdouble9.total
+    assert_equal 24, @hbust.total
+    assert_equal 16, @hpair.total
   end
 
   def test_hands_to_s
@@ -91,50 +91,50 @@ class TestHand < Minitest::Test
   end
 
   def test_payout_bust
-    assert_equal @hbust.payout(@hbust), -1
-    assert_equal @hbust.payout(@h5), -1
+    assert_equal 0, @hbust.payout(@hbust)
+    assert_equal 0, @hbust.payout(@h5)
   end
 
   def test_payout_dealer_bj
-    assert_equal @hbj.payout(@hbj), 1
-    assert_equal @h5.payout(@hbj), -1
-    assert_equal @hbust.payout(@hbj), -1
+    assert_equal 1, @hbj.payout(@hbj)
+    assert_equal 0, @h5.payout(@hbj)
+    assert_equal 0, @hbust.payout(@hbj)
   end
 
   def test_payout_bj
-    assert_equal @hbj.payout(@h5), 2.5
-    assert_equal @hbj.payout(@hbust), 2.5
-    assert_equal @hbj.payout(@hbj), 1
+    assert_equal 2.5, @hbj.payout(@h5)
+    assert_equal 2.5, @hbj.payout(@hbust)
+    assert_equal 1, @hbj.payout(@hbj)
   end
 
   def test_double_bet
-    assert_equal @hdouble9.bet, 2
+    assert_equal 2, @hdouble9.bet
   end
 
   def test_payout_push
     [@h5, @hsoft14, @hsoft20, @hbj, @hsoft16hit, @hhard12hit, @hdouble9, @hpair].each do |h|
-      assert_equal h.payout(h), h.bet, h.to_s
+      assert_equal h.bet, h.payout(h), h.to_s
     end
-    assert_equal @hbust.payout(@hbust), -1
+    assert_equal 0, @hbust.payout(@hbust)
   end
 
   def test_payout_unequal
-    assert_equal @h5.payout(@hsoft14), -1
-    assert_equal @hsoft14.payout(@h5), 2
+    assert_equal 0, @h5.payout(@hsoft14)
+    assert_equal 2, @hsoft14.payout(@h5)
   end
 
   def test_payout_double
-    assert_equal @hdouble9.payout(@h5), 4
-    assert_equal @hdouble9.payout(@hsoft14), -2
-    assert_equal @hdouble9.payout(@hdouble9), 2
+    assert_equal 4, @hdouble9.payout(@h5)
+    assert_equal 0, @hdouble9.payout(@hsoft14)
+    assert_equal 2, @hdouble9.payout(@hdouble9)
   end
 
   def test_split
     h1, h2 = @hpair.split!(@cards[3], @cards[4])
-    assert_equal h1.total, 11
-    assert_equal h1.bet, 1
-    assert_equal h2.total, 12
-    assert_equal h2.bet, 1
+    assert_equal 11, h1.total
+    assert_equal 1, h1.bet
+    assert_equal 12, h2.total
+    assert_equal 1, h2.bet
   end
 
 end
