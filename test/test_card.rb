@@ -16,20 +16,20 @@ class TestCard < Minitest::Test
   end
 
   def test_num_value
-    assert_equal @cards[9].value, :J
-    assert_equal @cards[9].num_value, 10
-    assert_equal @cards[10].value, :Q
-    assert_equal @cards[10].num_value, 10
-    assert_equal @cards[11].value, :K
-    assert_equal @cards[11].num_value, 10
-    assert_equal @cards[12].value, :A
-    assert_equal @cards[12].num_value, 11
+    assert_equal :J, @cards[9].value
+    assert_equal 10, @cards[9].num_value
+    assert_equal :Q, @cards[10].value
+    assert_equal 10, @cards[10].num_value
+    assert_equal :K, @cards[11].value
+    assert_equal 10, @cards[11].num_value
+    assert_equal :A, @cards[12].value
+    assert_equal 11, @cards[12].num_value
   end
 
   def test_to_s
-    assert_equal Card.new(:A, :spades).to_s, " A\u2664"
-    assert_equal Card.new(:A, :hearts).to_s, " A\u2665"
-    assert_equal Card.new(:A, :diamonds).to_s, " A\u2666"
-    assert_equal Card.new(:A, :clubs).to_s, " A\u2667"
+    assert_equal " A\u2664", Card.new(:A, :spades).to_s
+    assert_equal " A\u2665", Card.new(:A, :hearts).to_s
+    assert_equal " A\u2666", Card.new(:A, :diamonds).to_s
+    assert_equal " A\u2667", Card.new(:A, :clubs).to_s
   end
 end
