@@ -138,4 +138,13 @@ class TestHand < Minitest::Test
     assert_equal 1, h2.bet
   end
 
+  def test_split_bet
+    @hpair.bet = 8
+    h1, h2 = @hpair.split!(@cards[3], @cards[4])
+    assert_equal 11, h1.total
+    assert_equal 8, h1.bet
+    assert_equal 12, h2.total
+    assert_equal 8, h2.bet
+  end
+
 end

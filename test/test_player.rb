@@ -93,4 +93,33 @@ class TestPlayer < Minitest::Test
     assert !@p.double!(Card.new(2, :clubs))
   end
 
+  def test_payout_poststate
+    @p.initial_bet 1
+    @p.deal @h16
+    assert_equal 2, @p.payout(@h11)
+    assert_equal 101, @p.bankroll
+    assert_equal 0, @p.total_bet
+    assert @p.hands.empty?
+  end
+
+  def test_payout_split_winone
+    @p.initial_bet 1
+    @p.deal @h16
+    assert @p.split!(Card.new(:K, :clubs), Card.new(2, :clubs))
+    assert_equal 2, @p.payout(@h11)
+  end
+
+  def test_payout_split_wintwo
+    @p.initial_bet 1
+    @p.deal @h16
+    assert @p.split!(Card.new(:K, :clubs), Card.new(:Q, :clubs))
+    assert_equal 4, @p.payout(@h11)
+  end
+
+  def test_payout_split_zero
+    @p.initial_bet 1
+    @p.deal @h16
+    assert @p.split!(Card.new(2, :clubs), Card.new(3, :clubs))
+    assert_equal 0, @p.payout(@h16)
+  end
 end

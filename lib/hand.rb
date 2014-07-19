@@ -43,6 +43,8 @@ class Hand
     raise "Cannot split this hand: #{to_s}" unless splittable?
     h1 = Hand.new(@cards[0], card1)
     h2 = Hand.new(@cards[1], card2)
+    h1.bet = @bet
+    h2.bet = @bet
     @done = true
     [h1, h2]
   end

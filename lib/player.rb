@@ -29,11 +29,31 @@ class Player
     @hands[@active]
   end
 
-  def initial_bet(amount = 1)
+  def initial_bet(amount = nil)
+    if amount.nil?
+      amount = prompt_bet
+    end
     @increment = amount
     @total_bet = amount
     @bankroll -= amount
     @increment
+  end
+
+  def prompt_bet
+    bet = 0
+    valid = false
+    begin
+      puts "#{@name}, place your bet, 0 to sit."
+      puts "Bal: $#{@bankroll}"
+      bet = gets.chomp
+      valid = (Float(bet) == bet.to_i && bet.to_i > -1) rescue false
+      if bet.to_i > @bankroll
+        puts 'Insufficient funds!'
+        valid = false
+      end
+      puts 'Invalid bet!' unless valid
+    end until valid
+    bet.to_i
   end
 
   # stands on active hand
@@ -99,6 +119,7 @@ class Player
 
   def take_action(deck)
     puts active_hand
+    return stand! if active_hand.blackjack?
     action = prompt_action
     case action
     when 'd'
@@ -118,18 +139,24 @@ class Player
 
   def prompt_action
     action = nil
-    valid_actions = {}
-    valid_actions['d'] = 'Double' if active_hand.doubleable?
-    valid_actions['p'] = 'Split' if active_hand.splittable?
-    valid_actions['h'] = 'Hit' if active_hand.hittable?
-    valid_actions['s'] = 'Stand'
-    until valid_actions.keys.include?(action)
-      puts valid_actions.map { |k,v| "#{k} = #{v}" }.join("\n")
+    actions = valid_actions
+    begin
+      puts actions.map { |k,v| "#{k} = #{v}" }.join("\n")
       puts '--'
       action = gets.chomp
-      puts 'Invalid action!' unless valid_actions.keys.include?(action)
-    end
+      valid = actions.keys.include? action
+      puts 'Invalid action!' unless valid
+    end until valid
     action
+  end
+
+  def valid_actions
+    actions = {}
+    actions['d'] = 'Double' if active_hand.doubleable?
+    actions['p'] = 'Split' if active_hand.splittable?
+    actions['h'] = 'Hit' if active_hand.hittable?
+    actions['s'] = 'Stand'
+    actions
   end
 
 end
