@@ -13,10 +13,14 @@ class Deck
   end
 
   def size
+    @cards.size
+  end
+
+  def fraction
     @cards.size / 52.0 / @num_decks
   end
 
-  def reshuffle!(seed = nil)
+  def reshuffle!
     @cards = []
     @num_decks.times do
       Card::VALUES.each do |v|
@@ -24,11 +28,7 @@ class Deck
           @cards << Card.new(v,s)
         end
       end
-      if seed.nil?
-        @cards.shuffle!
-      else
-        @cards.shuffle! Random.new(seed)
-      end
+      @cards.shuffle!
     end
   end
 

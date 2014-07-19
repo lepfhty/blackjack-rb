@@ -1,12 +1,21 @@
 class Player
-  attr_reader :hands, :bankroll, :total_bet
+  attr_reader :name, :hands, :bankroll, :total_bet
 
-  def initialize
+  def initialize(name)
+    @name = name
     @hands = []
     @active = nil
     @bankroll = 100
     @increment = 0
     @total_bet = 0
+  end
+
+  def to_s
+    str = "#{@name} - Bal: $#{@bankroll}, Total Bet: $#{@total_bet}\n"
+    @hands.reduce(str) do |str, hand|
+      str << (active_hand == hand ? '* ' : '  ') << hand.to_s << "\n"
+    end
+    str
   end
 
   def deal(hand)
@@ -24,11 +33,11 @@ class Player
     @increment = amount
     @total_bet = amount
     @bankroll -= amount
+    @increment
   end
 
   # stands on active hand
   # moves to next hand
-  # returns true if no more hands
   def stand!
     active_hand.stand!
     check_done
@@ -36,7 +45,6 @@ class Player
 
   # hits on active hand
   # move to next hand if bust or twentyone
-  # returns true if no more hands
   def hit!(card)
     active_hand.hit! card
     check_done
@@ -45,10 +53,9 @@ class Player
   # increases bet
   # doubles on active hand
   # moves to next hand
-  # returns true if no more hands
   def double!(card)
     increase_bet
-    active_hand.double!(card)
+    active_hand.double! card
     check_done
   end
 
@@ -56,8 +63,6 @@ class Player
   # splits on active hand
   # updates list of hands
   # sets active hand to first split hand
-  # moves to next hand
-  # returns true if no more hands
   def split!(card1, card2)
     increase_bet
 
@@ -77,6 +82,8 @@ class Player
     @bankroll += win
     @increment = 0
     @total_bet = 0
+    @hands = []
+    win
   end
 
   def increase_bet
@@ -85,22 +92,44 @@ class Player
     @bankroll -= @increment
   end
 
-  # if active_hand busted, delete hand
-  # if active_hand blackjack, immediate payout, delete hand
-  # if active_hand done (stand/double), move to next hand
-  # return true if no more hands
   def check_done
-    if active_hand.done?
-      if active_hand.bust?
-        @hands.delete_at @active
-      elsif active_hand.blackjack?
-        @bankroll += 2.5 * active_hand.bet
-        @hands.delete_at @active
-      else
-        @active += 1
-      end
+    @active += 1 if active_hand.done?
+    @active < @hands.size
+  end
+
+  def take_action(deck)
+    puts active_hand
+    action = prompt_action
+    case action
+    when 'd'
+      puts "#{name} doubles."
+      double! deck.deal!
+    when 'p'
+      puts "#{name} splits."
+      split! deck.deal!, deck.deal!
+    when 'h'
+      puts "#{name} hits."
+      hit! deck.deal!
+    when 's'
+      puts "#{name} stands."
+      stand!
     end
-    @active >= @hands.size
+  end
+
+  def prompt_action
+    action = nil
+    valid_actions = {}
+    valid_actions['d'] = 'Double' if active_hand.doubleable?
+    valid_actions['p'] = 'Split' if active_hand.splittable?
+    valid_actions['h'] = 'Hit' if active_hand.hittable?
+    valid_actions['s'] = 'Stand'
+    until valid_actions.keys.include?(action)
+      puts valid_actions.map { |k,v| "#{k} = #{v}" }.join("\n")
+      puts '--'
+      action = gets.chomp
+      puts 'Invalid action!' unless valid_actions.keys.include?(action)
+    end
+    action
   end
 
 end

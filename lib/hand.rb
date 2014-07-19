@@ -4,28 +4,30 @@ class Hand
 
   def initialize(card1, card2)
     @cards = []
-    @ace = false
+    @aces = 0
     @bet = 1
     @done = false
-    @soft = false
     @total = 0
     hit!(card1)
     hit!(card2)
   end
 
   def to_s
-    @cards.map(&:to_s).join(' ') + (@soft ? ' (soft %d)' : ' (%d)') % @total
+    @cards.map(&:to_s).join('  ') + (soft? && !blackjack? ? '  (soft %d)' : '  (%d)') % @total
   end
 
   def hit!(card)
     raise "Cannot hit this hand: #{to_s}" unless hittable?
     @cards << card
-    @ace ||= (card.value == :A)
+    @aces = 0
     @total = @cards.reduce(0) do |s, card|
+      @aces += 1 if card.value == :A
       s += card.num_value
     end
-    @soft = @ace && @total < 21
-    @total -= 10 if (@ace && @total > 21 && @total <= 31)
+    while @aces > 0 && @total > 21
+      @total -= 10
+      @aces -= 1
+    end
     self
   end
 
@@ -89,6 +91,10 @@ class Hand
 
   def splittable?
     @cards.size == 2 && @cards[0].value == @cards[1].value
+  end
+
+  def soft?
+    @aces > 0
   end
 
 end

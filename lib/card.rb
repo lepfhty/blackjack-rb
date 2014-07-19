@@ -17,13 +17,13 @@ class Card
   def to_s
     case @suit
     when :spades
-      "%2s\u2664"
+      "%s\u2664"
     when :hearts
-      "%2s\u2665"
+      "%s\u2665"
     when :diamonds
-      "%2s\u2666"
+      "%s\u2666"
     when :clubs
-      "%2s\u2667"
+      "%s\u2667"
     end % @value.to_s
   end
 

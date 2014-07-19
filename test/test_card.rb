@@ -1,5 +1,4 @@
-require 'minitest'
-require 'minitest/autorun'
+require 'test_helper'
 
 require 'card'
 
@@ -27,9 +26,9 @@ class TestCard < Minitest::Test
   end
 
   def test_to_s
-    assert_equal " A\u2664", Card.new(:A, :spades).to_s
-    assert_equal " A\u2665", Card.new(:A, :hearts).to_s
-    assert_equal " A\u2666", Card.new(:A, :diamonds).to_s
-    assert_equal " A\u2667", Card.new(:A, :clubs).to_s
+    assert_equal "A\u2664", Card.new(:A, :spades).to_s
+    assert_equal "A\u2665", Card.new(:A, :hearts).to_s
+    assert_equal "A\u2666", Card.new(:A, :diamonds).to_s
+    assert_equal "A\u2667", Card.new(:A, :clubs).to_s
   end
 end

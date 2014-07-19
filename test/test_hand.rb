@@ -1,5 +1,4 @@
-require 'minitest'
-require 'minitest/autorun'
+require 'test_helper'
 
 require 'card'
 require 'hand'
@@ -22,6 +21,7 @@ class TestHand < Minitest::Test
     @hdouble9 = Hand.new(@cards[2], @cards[3]).double!(@cards[4])
     @hbust = Hand.new(@cards[9], @cards[8]).hit!(@cards[7])
     @hpair = Hand.new(@cards[8], @cards[8])
+    @haces = Hand.new(@cards[11], @cards[8]).hit!(@cards[11]).hit!(@cards[2])
   end
 
   def test_hands_total
@@ -34,6 +34,7 @@ class TestHand < Minitest::Test
     assert_equal 9, @hdouble9.total
     assert_equal 24, @hbust.total
     assert_equal 16, @hpair.total
+    assert_equal 12, @haces.total
   end
 
   def test_hands_to_s
