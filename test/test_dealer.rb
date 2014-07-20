@@ -2,6 +2,8 @@ require 'test_helper'
 
 require 'dealer'
 
+require 'mocks'
+
 class TestDealer < Minitest::Test
   def setup
     @dealer = Dealer.new
@@ -28,5 +30,42 @@ class TestDealer < Minitest::Test
   def test_faceup_card
     @dealer.deal @hand
     assert_equal @c1, @dealer.faceup_card
+  end
+
+  def test_take_action
+    deck = MockDeck.new Card.new(10, :clubs), Card.new(:K, :clubs)
+    @dealer.deal @hand
+    assert_equal 5, @dealer.active_hand.total
+    assert @dealer.take_action(deck, false)
+    assert_equal 15, @dealer.active_hand.total
+    assert !@dealer.take_action(deck, false)
+    assert_equal 25, @dealer.active_hand.total
+  end
+
+  def test_take_action_stand
+    deck = MockDeck.new Card.new(10, :clubs), Card.new(4, :clubs)
+    @dealer.deal @hand
+    assert_equal 5, @dealer.active_hand.total
+    assert @dealer.take_action(deck, false)
+    assert_equal 15, @dealer.active_hand.total
+    assert @dealer.take_action(deck, false)
+    assert_equal 19, @dealer.active_hand.total
+    assert !@dealer.take_action(deck, false)
+    assert_equal 19, @dealer.active_hand.total
+  end
+
+  def test_take_action_soft17
+    deck = MockDeck.new(Card.new(:A, :clubs), Card.new(:A, :spades),
+      Card.new(5, :clubs), Card.new(:K, :clubs))
+    @dealer.deal @hand
+    assert_equal 5, @dealer.active_hand.total
+    assert @dealer.take_action(deck, false)
+    assert_equal 16, @dealer.active_hand.total
+    assert @dealer.take_action(deck, false)
+    assert_equal 17, @dealer.active_hand.total
+    assert @dealer.take_action(deck, false)
+    assert_equal 12, @dealer.active_hand.total
+    assert !@dealer.take_action(deck, false)
+    assert_equal 22, @dealer.active_hand.total
   end
 end

@@ -5,6 +5,8 @@ require 'player'
 require 'card'
 require 'deck'
 
+require 'mocks'
+
 class TestPlayer < Minitest::Test
 
   def setup
@@ -121,24 +123,6 @@ class TestPlayer < Minitest::Test
     @p.deal @h16
     assert @p.split!(Card.new(2, :clubs), Card.new(3, :clubs))
     assert_equal 0, @p.payout(@h16)
-  end
-
-  class ConstantAction
-    def initialize(action)
-      @action = action
-    end
-    def prompt_action(hand, inc, bank)
-      @action
-    end
-  end
-
-  class MockDeck
-    def initialize(*cards)
-      @cards = cards
-    end
-    def deal!
-      @cards.shift
-    end
   end
 
   def test_take_action_stand

@@ -67,7 +67,7 @@ class Hand
 
   def done?
     # double! might have set @done = true
-    @done = true if bust? or twentyone?
+    @done = true if (bust? or twentyone?)
     @done
   end
 

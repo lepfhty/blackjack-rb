@@ -21,18 +21,18 @@ class Dealer
     @hand.cards[0]
   end
 
-  def take_action(deck)
-    puts active_hand
+  def take_action(deck, console = true)
+    puts active_hand if console
     if @hand.total < 17 or (@hand.soft? && @hand.total == 17)
-      puts "#{@name} hits."
+      puts "#{@name} hits." if console
       @hand.hit! deck.deal!
     elsif @hand.total > 21
-      puts "#{@name} busts."
+      puts "#{@name} busts." if console
     else
-      puts "#{@name} stands."
+      puts "#{@name} stands." if console
       @hand.stand!
     end
-    @hand.done?
+    !@hand.done?
   end
 
 end
