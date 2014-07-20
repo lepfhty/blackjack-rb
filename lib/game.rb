@@ -83,8 +83,9 @@ class ConsoleGame
     @betting_players.each do |player|
       unless player == @dealer
         puts player
+        bet = player.total_bet
         win = player.payout(@dealer.active_hand)
-        puts "  #{ win > 0 ? "WINS #{win}" : 'LOSES' }"
+        puts "  #{ win > 0 ? (win == bet ? "PUSH (#{win})" : "WINS #{win}") : 'LOSES' }"
       end
     end
     puts '$---------------$'
