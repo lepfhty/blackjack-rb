@@ -1,5 +1,4 @@
 require 'card'
-require 'logger'
 
 class Deck
   def initialize(num = 1)
