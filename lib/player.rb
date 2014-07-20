@@ -1,13 +1,16 @@
+require 'console_prompter'
+
 class Player
   attr_reader :name, :hands, :bankroll, :total_bet
 
-  def initialize(name)
+  def initialize(name, prompter = ConsolePrompter.new)
     @name = name
     @hands = []
     @active = nil
     @bankroll = 100
     @increment = 0
     @total_bet = 0
+    @prompter = prompter
   end
 
   def to_s
@@ -31,29 +34,12 @@ class Player
 
   def initial_bet(amount = nil)
     if amount.nil?
-      amount = prompt_bet
+      amount = @prompter.prompt_bet @name, @bankroll
     end
     @increment = amount
     @total_bet = amount
     @bankroll -= amount
     @increment
-  end
-
-  def prompt_bet
-    bet = 0
-    valid = false
-    begin
-      puts "#{@name}, place your bet, 0 to sit."
-      puts "Bal: $#{@bankroll}"
-      bet = gets.chomp
-      valid = (Float(bet) == bet.to_i && bet.to_i > -1) rescue false
-      if bet.to_i > @bankroll
-        puts 'Insufficient funds!'
-        valid = false
-      end
-      puts 'Invalid bet!' unless valid
-    end until valid
-    bet.to_i
   end
 
   # stands on active hand
@@ -118,45 +104,18 @@ class Player
   end
 
   def take_action(deck)
-    puts active_hand
     return stand! if active_hand.blackjack?
-    action = prompt_action
+    action = @prompter.prompt_action active_hand, @increment, @bankroll
     case action
     when 'd'
-      puts "#{name} doubles."
       double! deck.deal!
     when 'p'
-      puts "#{name} splits."
       split! deck.deal!, deck.deal!
     when 'h'
-      puts "#{name} hits."
       hit! deck.deal!
     when 's'
-      puts "#{name} stands."
       stand!
     end
-  end
-
-  def prompt_action
-    action = nil
-    actions = valid_actions
-    begin
-      puts actions.map { |k,v| "#{k} = #{v}" }.join("\n")
-      puts '--'
-      action = gets.chomp
-      valid = actions.keys.include? action
-      puts 'Invalid action!' unless valid
-    end until valid
-    action
-  end
-
-  def valid_actions
-    actions = {}
-    actions['d'] = 'Double' if active_hand.doubleable?
-    actions['p'] = 'Split' if active_hand.splittable?
-    actions['h'] = 'Hit' if active_hand.hittable?
-    actions['s'] = 'Stand'
-    actions
   end
 
 end

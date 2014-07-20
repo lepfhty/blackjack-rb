@@ -122,4 +122,68 @@ class TestPlayer < Minitest::Test
     assert @p.split!(Card.new(2, :clubs), Card.new(3, :clubs))
     assert_equal 0, @p.payout(@h16)
   end
+
+  class ConstantAction
+    def initialize(action)
+      @action = action
+    end
+    def prompt_action(hand, inc, bank)
+      @action
+    end
+  end
+
+  class MockDeck
+    def initialize(*cards)
+      @cards = cards
+    end
+    def deal!
+      @cards.shift
+    end
+  end
+
+  def test_take_action_stand
+    @p = Player.new 'first', ConstantAction.new('s')
+    @p.initial_bet 1
+    @p.deal @h16
+    # stand should always return false
+    assert !@p.take_action(nil)
+  end
+
+  def test_take_action_hit
+    @p = Player.new 'first', ConstantAction.new('h')
+    @p.initial_bet 1
+    @p.deal @h16
+    deck = MockDeck.new Card.new(2, :clubs), Card.new(5, :clubs)
+    # hit, 18 no bust
+    assert @p.take_action(deck)
+    # hit, 23 bust
+    assert !@p.take_action(deck)
+  end
+
+  def test_take_action_double
+    @p = Player.new 'first', ConstantAction.new('d')
+    @p.initial_bet 1
+    @p.deal @h16
+    deck = MockDeck.new Card.new(3, :clubs)
+    # must move to next hand when doubling
+    assert !@p.take_action(deck)
+  end
+
+  def test_take_action_split
+    @p = Player.new 'first', ConstantAction.new('p')
+    @p.initial_bet 1
+    @p.deal @h16
+    deck = MockDeck.new Card.new(3, :clubs), Card.new(2, :clubs)
+    # more hands still exist
+    assert @p.take_action(deck)
+  end
+
+  def test_take_action_split_doubleblackjack
+    @p = Player.new 'first', ConstantAction.new('p')
+    @p.initial_bet 1
+    @p.deal Hand.new(Card.new(:A, :clubs), Card.new(:A, :clubs))
+    deck = MockDeck.new Card.new(10, :clubs), Card.new(10, :spades)
+    # more hands still exist
+    assert @p.take_action(deck)
+  end
 end
